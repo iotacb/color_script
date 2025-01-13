@@ -6,7 +6,7 @@ set /p "RED=Enter RED value (0-255): "
 set /p "GREEN=Enter GREEN value (0-255): "
 set /p "BLUE=Enter BLUE value (0-255): "
 
-rem handle default values more efficiently
+rem check if no color values are provided
 if "%RED%%GREEN%%BLUE%"=="" (
     echo No color values provided, using default: %DEFAULT_COLOR%
     set "COLOR_VALUE=%DEFAULT_COLOR%"
@@ -16,14 +16,14 @@ if "%RED%%GREEN%%BLUE%"=="" (
 
 echo Using Color: %COLOR_VALUE%...
 
-rem combine registry operations
 set "BASE_PATH=HKEY_CURRENT_USER\Control Panel\Colors"
 echo Creating backup of Colors registry...
 reg export "%BASE_PATH%" "colors_backup.reg" /y
 
 echo Updating color values...
 
-rem batch the registry updates together
+
+rem apply the color values to the registry
 (
     reg add "%BASE_PATH%" /v Hilight /t REG_SZ /d "%COLOR_VALUE%" /f
     reg add "%BASE_PATH%" /v MenuHilight /t REG_SZ /d "%COLOR_VALUE%" /f
@@ -33,6 +33,6 @@ rem batch the registry updates together
 echo Color values updated successfully.
 echo The new colors will take effect after restarting the system.
 
-choice /c yn /m "Do you want to restart the system now"
+choice /c yn /m "Do you want to restart the system now "
 if errorlevel 2 goto :eof
 shutdown /r /t 0
